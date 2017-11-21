@@ -1,6 +1,7 @@
 Assume your host PC is using Ubuntu 16.04.
 
-A. Install GPU Drivers. (Assume using Nvidia CUDA infrastructure) 
+A. Install GPU Drivers: 
+    Assume using Nvidia CUDA infrastructure
 
     a. Tensorflow 1.4 below: (CUDA 8.0) 
 
@@ -36,22 +37,23 @@ A. Install GPU Drivers. (Assume using Nvidia CUDA infrastructure)
             [LINK](https://developer.nvidia.com/rdp/cudnn-download) 
 
 B. Install Tensorflow: (Using VirtualENV) 
-    * Python 2.7
-    ```
-        sudo apt-get install libcupti-dev
-        
-        sudo apt-get install python-pip python-dev python-virtualenv
-        # (You may change "~/tensorflow" to any folder you preferred.)
-        virtualenv --system-site-packages ~/tensorflow
+    * Python 2.7 
 
-        # (Switch into virtual env)
-        source ~/tensorflow/bin/activate
+        ``` 
+            sudo apt-get install libcupti-dev
+            
+            sudo apt-get install python-pip python-dev python-virtualenv
+            # (You may change "~/tensorflow" to any folder you preferred.)
+            virtualenv --system-site-packages ~/tensorflow
 
-        # Install package into virtual env.
-        easy_install -U pip
-        pip install --upgrade tensorflow-gpu  # for Python 2.7 and GPU
-    ```
+            # (Switch into virtual env)
+            source ~/tensorflow/bin/activate
+
+            # Install package into virtual env.
+            easy_install -U pip
+            pip install --upgrade tensorflow-gpu  # for Python 2.7 and GPU
+        ```
 
 C. Reference:
-  1. https://www.tensorflow.org/install/
+  [Install Tensorflow](https://www.tensorflow.org/install/)
 

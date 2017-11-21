@@ -1,12 +1,12 @@
 Assume your host PC is using Ubuntu 16.04.
 
-* Install GPU Drivers:  
-  Assume using Nvidia CUDA infrastructure.  
+* Install GPU Drivers: (Assume using Nvidia CUDA infrastructure.)  
   - **Tensorflow 1.4 and below**: (CUDA 8.0) 
-    1. Install **CUDA 8.0**: [LINK](https://developer.nvidia.com/cuda-80-ga2-download-archive)
+    1. Install **CUDA 8.0**: [LINK](https://developer.nvidia.com/cuda-80-ga2-download-archive)  
+
       The default link is for CUDA 9.0. You could download CUDA 8.0 GA2 thru the link.
 
-    2. Install **cuDNN v6.0**: [LINK](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v6/prod/8.0_20170307/Ubuntu16_04_x64/libcudnn6_6.0.20-1+cuda8.0_amd64-deb) 
+    2. Install **cuDNN v6.0**: [LINK](https://developer.nvidia.com/compute/machine-learning/cudnn/secure/v6/prod/8.0_20170307/Ubuntu16_04_x64/libcudnn6_6.0.20-1+cuda8.0_amd64-deb)  
 
   - **Tensorflow 1.4 above**: (CUDA 9.0) 
 

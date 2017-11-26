@@ -34,6 +34,8 @@ from __future__ import print_function
 import argparse
 import sys
 
+import json
+
 import csv
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -50,6 +52,18 @@ from tensorflow.contrib.framework.python.ops import audio_ops as contrib_audio
 
 FLAGS = None
 
+class PrettyFloat(float):
+    def __repr__(self):
+        return '%.4f' % self
+
+def pretty_floats(obj):
+    if isinstance(obj, float):
+        return PrettyFloat(obj)
+    elif isinstance(obj, dict):
+        return dict((k, pretty_floats(v)) for k, v in obj.items())
+    elif isinstance(obj, (list, tuple)):
+        return map(pretty_floats, obj)             
+    return obj
 
 def load_graph(filename):
   """Unpersists graph from file as default graph."""
@@ -67,13 +81,29 @@ def load_labels(filename):
 def run_graph(wav_data, labels, input_layer_name, output_layer_name,
               num_top_predictions):
   """Runs the audio data through the graph and prints predictions."""
+    
+
   ts = time.time()
   with tf.Session() as sess:
     logging.debug('tf.Session(): %s', (time.time() - ts))
     ts = time.time()
-    with open('%s.csv' % (FLAGS.graph) , 'w') as csvfile:
-      fieldnames = ['fpath', 'fname', 'label']
-      fieldnames = fieldnames + labels
+    with open('%s.%s.csv' % (FLAGS.graph, FLAGS.csv) , 'w') as csvfile:
+      fieldnames = ['fname', 'label']
+      kaggle_labels = []
+      for index, label in enumerate(labels):
+        if label == '_unknown_':
+          label = 'unknown'
+        elif label == '_silence_':
+          label = 'silence'
+        kaggle_labels.append(label)
+      print( kaggle_labels)
+
+
+      if FLAGS.csv == "analysis":
+        num_top_predictions = len(labels)
+        #fieldnames = fieldnames + labels
+        fieldnames.append('fpath')
+        fieldnames.append('sorted_label')
       csv_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
       csv_writer.writeheader()
 
@@ -82,7 +112,7 @@ def run_graph(wav_data, labels, input_layer_name, output_layer_name,
           if f.split(".")[-1] != "wav":
             continue
 
-          csv_raw = {'fpath': dirpath, 'fname': f}
+          csv_raw = {'fname': f}
 
           wav_fullpath = '%s%s' % (dirpath,f)
           logging.debug('process %s', wav_fullpath)
@@ -103,14 +133,23 @@ def run_graph(wav_data, labels, input_layer_name, output_layer_name,
           top_k = predictions.argsort()[-num_top_predictions:][::-1]
           if len(top_k) > 0:
             highest_score_id = top_k[0]
-            csv_raw['label'] = labels[highest_score_id]
+            if FLAGS.csv == 'kaggle':
+              csv_raw['label'] = kaggle_labels[highest_score_id]
+            elif FLAGS.csv == 'analysis':
+              csv_raw['label'] = labels[highest_score_id]
 
+          sorted_label = []
           for node_id in top_k:
             human_string = labels[node_id]
             score = predictions[node_id]
-            csv_raw[human_string] = score
+            if FLAGS.csv == 'analysis':
+              #csv_raw[human_string] = score
+              csv_raw['fpath'] = dirpath
+              sorted_label.append({human_string: float(score)})
             print('%s (score = %.5f)' % (human_string, score))
-          
+
+          if FLAGS.csv == 'analysis':
+            csv_raw['sorted_label'] = json.dumps(pretty_floats(sorted_label))
           csv_writer.writerow(csv_raw)
 
     return 0

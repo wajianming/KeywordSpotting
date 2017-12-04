@@ -151,7 +151,11 @@ def main(_):
   with tf.name_scope('train'), tf.control_dependencies(control_dependencies):
     learning_rate_input = tf.placeholder(
         tf.float32, [], name='learning_rate_input')
+    '''
     train_step = tf.train.GradientDescentOptimizer(
+        learning_rate_input).minimize(cross_entropy_mean)
+    '''
+    train_step = tf.train.AdagradOptimizer(
         learning_rate_input).minimize(cross_entropy_mean)
   predicted_indices = tf.argmax(logits, 1)
   expected_indices = tf.argmax(ground_truth_input, 1)
